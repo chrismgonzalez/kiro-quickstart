@@ -7,9 +7,11 @@ This implementation follows strict ATDD principles with a two-phase approach. Ph
 ## Phase 1: RED - Write All Tests
 
 - [ ] 1. Scaffold four-layer acceptance test infrastructure (RED)
-  - Create tests/acceptance/test_task_creation.py (Layer 1: test cases in domain language)
-  - Create tests/acceptance/story_dsl.py (Layer 2: DSL that composes driver operations)
+  - Create tests/acceptance/test_task_creation.py (Layer 1: test cases using namespace pattern)
+  - Create tests/acceptance/story_dsl.py (Layer 2: DSL with given/when/then namespaces)
   - Create tests/acceptance/system_driver.py (Layer 3: elementary calls to modules)
+  - Use namespace pattern: `given.*`, `when.*`, `then.*` methods
+  - State flows through tests via return values
   - Translate all Gherkin scenarios from design.md into executable test cases
   - Driver imports define application structure: TaskStore, JSONFileBackend, Task model
   - All acceptance tests will FAIL - this is the starting RED state
