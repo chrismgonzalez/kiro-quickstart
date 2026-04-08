@@ -10,18 +10,22 @@ This directory contains Kiro-specific configuration for this talk/presentation.
 │   ├── atdd.md          # 4-layer acceptance testing framework
 │   └── docs.md          # Documentation sync process
 ├── steering/            # Always-on context and guidance
-│   ├── development-guide.md    # Coding standards, tech stack
-│   ├── code-index.md           # Complete file/symbol map
-│   └── testing-guide.md        # Testing quick reference
+│   ├── development-guide.md           # Coding standards, tech stack, two-phase workflow
+│   ├── code-index.md                  # Complete file/symbol map
+│   ├── testing-guide.md               # Testing quick reference
+│   ├── spec-design-construction.md    # Design.md creation guide
+│   ├── spec-task-construction.md      # Tasks.md two-phase guide
+│   └── README.md                      # Steering files overview
 └── hooks/               # Automated agent triggers
-    └── source-to-docs-sync.kiro.hook  # Doc drift detection
+    ├── source-to-docs-sync.kiro.hook  # Doc drift detection
+    └── python-quality-checks.kiro.hook # Python linting on save
 ```
 
 ## Skills
 
 Skills are comprehensive guides loaded on-demand to keep context focused.
 
-### testing.md
+### atdd.md
 
 **When to use:** When writing tests, building test infrastructure, or deciding what kind of test to write.
 
@@ -31,10 +35,11 @@ Skills are comprehensive guides loaded on-demand to keep context focused.
 - TypeScript and Python examples
 - Realistic test data and fixture design guidance
 - Scenario design patterns (happy path, boundary, failure)
+- Two-phase ATDD workflow (Phase 1: all tests, Phase 2: all implementation)
 
 **Activate with:**
 
-- "Use the testing skill to help me write tests"
+- "Use the atdd skill to help me write tests"
 - "Create a DSL for the application domain"
 - "Set up acceptance tests"
 
@@ -67,8 +72,9 @@ Core development guidance including:
 - Quick start commands
 - Technology stack
 - Coding standards
-- Testing requirements
+- Testing requirements (test-first, ATDD)
 - File structure and naming conventions
+- Two-phase spec workflow (tests first, then implementation)
 
 ### code-index.md
 
@@ -94,7 +100,8 @@ Quick testing reference:
 - Test structure (Given-When-Then)
 - Test locations
 - Running tests
-- When to use the testing skill
+- When to use the atdd skill
+- Two-phase approach: Phase 1 (RED - all tests), Phase 2 (GREEN - all implementation)
 
 ## Hooks
 
@@ -116,6 +123,27 @@ Hooks automate agent actions based on IDE events.
 **Trigger from:** Kiro Hooks panel in the IDE or command palette
 
 ## Best Practices
+
+### Spec Development Workflow
+
+**Two-Phase ATDD Approach:**
+
+1. **Phase 1: RED - Write All Tests**
+   - Scaffold acceptance test infrastructure (4 layers)
+   - Write unit tests for all components
+   - All tests fail (complete RED state)
+   - Natural session break point
+
+2. **Phase 2: GREEN - Implement Everything**
+   - Implement components one by one
+   - Run tests until GREEN
+   - Refactor as needed
+
+**Session Management:**
+
+- Complete Phase 1 in one session
+- Start fresh session for Phase 2 implementation
+- Phase boundary provides clean context reset
 
 ### When to Use Skills vs Steering
 
