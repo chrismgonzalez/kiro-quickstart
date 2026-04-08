@@ -13,9 +13,9 @@ declare -A CHECKPOINTS=(
     ["02-design"]="First pass at the design"
     ["03-tasks"]="Sequenced tasks"
     ["04-test-first-red"]="Acceptance test written (RED - failing)"
-    ["05-module-implemented"]="Module complete with unit tests"
-    ["06-feature-complete-green"]="CLI integrated - all tests pass (GREEN)"
-    ["07-docs-updated"]="Documentation synced with code"
+    ["05-implementation"]="Implementation (GREEN - passing)"
+    ["06-hooks-quality"]="Code quality hook"
+    ["07-hooks-docs"]="Documentation synced with code"
 )
 
 # Ordered list for display
@@ -25,9 +25,9 @@ CHECKPOINT_ORDER=(
     "02-design"
     "03-tasks"
     "04-test-first-red"
-    "05-module-implemented"
-    "06-feature-complete-green"
-    "07-docs-updated"
+    "05-implementation"
+    "06-hooks-quality"
+    "07-hooks-docs"
 )
 
 show_usage() {
