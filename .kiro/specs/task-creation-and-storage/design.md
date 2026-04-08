@@ -2,7 +2,7 @@
 
 ## Overview
 
-This design specifies the implementation of a task tracker CLI proof-of-concept that demonstrates ATDD with a four-layer test architecture. The system enables users to create tasks with titles, tags, and status, and persists them to a JSON file at `~/.task-tracker/tasks.json`.
+This design specifies the implementation of a task tracker CLI proof-of-concept that demonstrates ATDD with a four-layer test architecture. The system enables users to create tasks with titles, tags, and status, and persists them to a JSON file.
 
 The design emphasizes:
 
@@ -22,6 +22,297 @@ The design emphasizes:
 4. **Validation at CLI Layer**: Input validation (empty title, invalid status) occurs at the CLI layer before reaching the store, providing immediate user feedback.
 
 5. **Real Implementations in Tests**: No mocking of internal modules (TaskStore, TaskFilter, TaskFormatter) since all code is under our control. Only external third-party dependencies would be mocked.
+
+## Behavioral Specifications (Gherkin)
+
+This section translates all EARS acceptance criteria from requirements.md into executable specifications using Given-When-Then scenarios in pure domain language.
+
+### Requirement 1: Create Tasks
+
+**1.1 - User provides a title**
+
+```gherkin
+Scenario: User creates task with title
+  Given the task tracker is ready
+  When the user creates a task with title "Write documentation"
+  Then a task exists with title "Write documentation"
+```
+
+**1.2 - User provides tags**
+
+```gherkin
+Scenario: User creates task with tags
+  Given the task tracker is ready
+  When the user creates a task with title "Deploy application" and tags "urgent" and "devops"
+  Then a task exists with title "Deploy application" and tags "urgent" and "devops"
+```
+
+**1.3 - User provides a status**
+
+```gherkin
+Scenario: User creates task with status
+  Given the task tracker is ready
+  When the user creates a task with title "Review code" and status "complete"
+  Then a task exists with title "Review code" and status "complete"
+```
+
+**1.4 - User does not provide a status**
+
+```gherkin
+Scenario: User creates task without specifying status
+  Given the task tracker is ready
+  When the user creates a task with title "Fix bug"
+  Then a task exists with title "Fix bug" and status "pending"
+```
+
+**1.5 - Task is assigned a unique ID**
+
+```gherkin
+Scenario: Each task receives a unique identifier
+  Given the task tracker is ready
+  When the user creates a task with title "First task"
+  And the user creates a task with title "Second task"
+  And the user creates a task with title "Third task"
+  Then each task has a different identifier
+```
+
+**1.6 - Task records creation timestamp**
+
+```gherkin
+Scenario: Task records when it was created
+  Given the task tracker is ready
+  When the user creates a task with title "Time-sensitive task"
+  Then the task has a creation timestamp
+```
+
+### Requirement 2: Persist Tasks to JSON File
+
+**2.1 - Task is written to storage**
+
+```gherkin
+Scenario: Created task is persisted
+  Given the task tracker is ready
+  When the user creates a task with title "Persistent task"
+  And the user retrieves all tasks
+  Then a task exists with title "Persistent task"
+```
+
+**2.2 - Storage location is created if missing**
+
+```gherkin
+Scenario: Task tracker initializes storage on first use
+  Given the task tracker storage does not exist
+  When the user creates a task with title "First ever task"
+  Then the task is successfully created
+  And a task exists with title "First ever task"
+```
+
+**2.3 - New tasks are appended to existing tasks**
+
+```gherkin
+Scenario: Multiple tasks are stored together
+  Given the task tracker is ready
+  When the user creates a task with title "Task one"
+  And the user creates a task with title "Task two"
+  And the user retrieves all tasks
+  Then 2 tasks exist
+  And a task exists with title "Task one"
+  And a task exists with title "Task two"
+```
+
+**2.4 - Storage maintains valid format**
+
+```gherkin
+Scenario: Storage remains valid after multiple operations
+  Given the task tracker is ready
+  When the user creates a task with title "Alpha"
+  And the user creates a task with title "Beta"
+  And the user creates a task with title "Gamma"
+  And the user retrieves all tasks
+  Then 3 tasks exist
+```
+
+**2.5 - Tasks are read from storage**
+
+```gherkin
+Scenario: User retrieves previously created tasks
+  Given the task tracker is ready
+  And the user has created a task with title "Stored task" and tags "important"
+  When the user retrieves all tasks
+  Then a task exists with title "Stored task" and tags "important"
+```
+
+**2.6 - Invalid storage format returns error**
+
+```gherkin
+Scenario: Corrupted storage produces error message
+  Given the task tracker storage is corrupted
+  When the user attempts to retrieve all tasks
+  Then an error message indicates the storage is invalid
+```
+
+### Requirement 3: Modular Storage Backend
+
+**Note:** Requirements 3.1-3.5 are architectural constraints verified through code structure, not behavioral scenarios.
+
+### Requirement 4: Task Data Validation
+
+**4.1 - Empty title is rejected**
+
+```gherkin
+Scenario: User attempts to create task with empty title
+  Given the task tracker is ready
+  When the user attempts to create a task with an empty title
+  Then the task is not created
+  And an error message "Title cannot be empty" is displayed
+```
+
+**4.2 - Invalid status is rejected**
+
+```gherkin
+Scenario: User attempts to create task with invalid status
+  Given the task tracker is ready
+  When the user attempts to create a task with title "Test" and status "in-progress"
+  Then the task is not created
+  And an error message lists valid status values
+```
+
+**4.3 - Tags accept string lists**
+
+```gherkin
+Scenario: User creates task with multiple tags
+  Given the task tracker is ready
+  When the user creates a task with title "Tagged task" and tags "work", "urgent", and "backend"
+  Then a task exists with title "Tagged task" and tags "work", "urgent", and "backend"
+```
+
+**4.4 - Task ID is a positive integer**
+
+```gherkin
+Scenario: Task identifiers are positive integers
+  Given the task tracker is ready
+  When the user creates a task with title "ID test"
+  Then the task has an identifier greater than zero
+```
+
+**4.5 - Creation timestamp is valid ISO format**
+
+```gherkin
+Scenario: Task timestamp follows ISO format
+  Given the task tracker is ready
+  When the user creates a task with title "Timestamp test"
+  Then the task has a valid ISO format timestamp
+```
+
+### Requirement 5: Task Retrieval
+
+**5.1 - Retrieve all tasks**
+
+```gherkin
+Scenario: User retrieves all tasks
+  Given the task tracker is ready
+  And the user has created a task with title "Task A"
+  And the user has created a task with title "Task B"
+  When the user retrieves all tasks
+  Then 2 tasks exist
+```
+
+**5.2 - Tasks returned in creation order**
+
+```gherkin
+Scenario: Tasks are listed in creation order
+  Given the task tracker is ready
+  When the user creates a task with title "First task"
+  And the user creates a task with title "Second task"
+  And the user creates a task with title "Third task"
+  And the user lists all tasks
+  Then the tasks appear in order: "First task", "Second task", "Third task"
+```
+
+**5.3 - Retrieve task by ID**
+
+```gherkin
+Scenario: User retrieves specific task by identifier
+  Given the task tracker is ready
+  And the user has created a task with title "Specific task"
+  When the user retrieves the task by its identifier
+  Then the task has title "Specific task"
+```
+
+**5.4 - Non-existent ID returns error**
+
+```gherkin
+Scenario: User attempts to retrieve non-existent task
+  Given the task tracker is ready
+  When the user attempts to retrieve a task with identifier 999
+  Then an error message indicates the task was not found
+```
+
+**5.5 - Empty storage returns empty list**
+
+```gherkin
+Scenario: User retrieves tasks when none exist
+  Given the task tracker is ready
+  And no tasks have been created
+  When the user retrieves all tasks
+  Then 0 tasks exist
+```
+
+### Requirement 6: Task ID Generation
+
+**6.1 - First task gets ID 1**
+
+```gherkin
+Scenario: First task receives identifier 1
+  Given the task tracker is ready
+  And no tasks have been created
+  When the user creates a task with title "Very first task"
+  Then the task has identifier 1
+```
+
+**6.2 - Subsequent tasks get sequential IDs**
+
+```gherkin
+Scenario: Tasks receive sequential identifiers
+  Given the task tracker is ready
+  When the user creates a task with title "Task 1"
+  And the user creates a task with title "Task 2"
+  And the user creates a task with title "Task 3"
+  Then the tasks have identifiers 1, 2, and 3
+```
+
+**6.3 - Next ID is max existing ID plus 1**
+
+```gherkin
+Scenario: New task identifier follows maximum existing identifier
+  Given the task tracker is ready
+  And tasks exist with identifiers 1, 2, and 5
+  When the user creates a task with title "New task"
+  Then the task has identifier 6
+```
+
+**6.4 - Empty storage starts at ID 1**
+
+```gherkin
+Scenario: First task in empty storage gets identifier 1
+  Given the task tracker is ready
+  And no tasks have been created
+  When the user creates a task with title "Initial task"
+  Then the task has identifier 1
+```
+
+**6.5 - Task IDs are unique**
+
+```gherkin
+Scenario: No two tasks share the same identifier
+  Given the task tracker is ready
+  When the user creates 10 tasks
+  Then all 10 tasks have different identifiers
+```
+
+### Requirement 7: Four-Layer Test Architecture
+
+**Note:** Requirements 7.1-7.7 are testing architecture constraints verified through test code structure, not behavioral scenarios.
 
 ## Architecture
 
@@ -228,111 +519,6 @@ class JSONFileBackend:
 - File created automatically on first task creation
 - Empty file represented as `[]` (empty JSON array)
 
-## Correctness Properties
-
-_A property is a characteristic or behavior that should hold true across all valid executions of a system—essentially, a formal statement about what the system should do. Properties serve as the bridge between human-readable specifications and machine-verifiable correctness guarantees._
-
-### Property Reflection
-
-After analyzing all acceptance criteria, I identified the following testable properties. During reflection, I consolidated redundant properties:
-
-- Properties 1.5 and 6.5 both test ID uniqueness → Combined into Property 5
-- Properties 1.6 and 4.5 both test ISO timestamp format → Combined into Property 6
-- Properties 2.1 and 2.5 both test persistence round-trip → Combined into Property 7
-- Properties 6.1 and 6.4 both test first task ID → Kept as example test, not property
-
-The following properties represent the minimal set of universal correctness guarantees:
-
-### Property 1: Task Creation Preserves Title
-
-_For any_ non-empty title string, creating a task with that title SHALL result in a task object containing the exact title provided.
-
-**Validates: Requirements 1.1**
-
-### Property 2: Task Creation Preserves Tags
-
-_For any_ list of tag strings, creating a task with those tags SHALL result in a task object containing the exact tags provided.
-
-**Validates: Requirements 1.2**
-
-### Property 3: Task Creation Preserves Status
-
-_For any_ valid status value ("pending" or "complete"), creating a task with that status SHALL result in a task object with that exact status.
-
-**Validates: Requirements 1.3**
-
-### Property 4: Empty Title Rejection
-
-_For any_ string composed entirely of whitespace (including empty string), attempting to create a task with that title SHALL be rejected with an error message "Title cannot be empty".
-
-**Validates: Requirements 4.1**
-
-### Property 5: Task ID Uniqueness
-
-_For any_ sequence of task creations, each task SHALL be assigned a unique Task_ID, with no two tasks ever sharing the same ID.
-
-**Validates: Requirements 1.5, 6.5**
-
-### Property 6: ISO Timestamp Format
-
-_For any_ task creation, the created_at field SHALL contain a valid ISO format timestamp string.
-
-**Validates: Requirements 1.6, 4.5**
-
-### Property 7: Persistence Round-Trip
-
-_For any_ task created and persisted to storage, reading the task back from storage SHALL return a task with identical data (id, title, tags, status, created_at).
-
-**Validates: Requirements 2.1, 2.5**
-
-### Property 8: Task List Append Preservation
-
-_For any_ existing list of tasks and any new task, persisting the new task SHALL result in storage containing all previous tasks plus the new task, with no previous tasks modified or removed.
-
-**Validates: Requirements 2.3**
-
-### Property 9: JSON Format Invariant
-
-_For any_ sequence of task creation and persistence operations, the JSON file SHALL remain parseable as valid JSON at all times.
-
-**Validates: Requirements 2.4**
-
-### Property 10: Invalid Status Rejection
-
-_For any_ status value outside the set {"pending", "complete"}, attempting to create a task with that status SHALL be rejected with an error message listing valid status values.
-
-**Validates: Requirements 4.2**
-
-### Property 11: Tags Accept String Lists
-
-_For any_ list of string values, creating a task with those values as tags SHALL be accepted without error.
-
-**Validates: Requirements 4.3**
-
-### Property 12: Positive Integer IDs
-
-_For any_ task created, the Task_ID SHALL be a positive integer (greater than zero).
-
-**Validates: Requirements 4.4**
-
-### Property 13: Creation Order Preservation
-
-_For any_ sequence of task creations, retrieving all tasks SHALL return them in the same order they were created.
-
-**Validates: Requirements 5.2**
-
-### Property 14: Sequential ID Assignment
-
-_For any_ sequence of task creations starting from empty storage, Task_IDs SHALL be assigned sequentially (1, 2, 3, ...) with no gaps.
-
-**Validates: Requirements 6.2**
-
-### Property 15: Next ID Algorithm
-
-_For any_ existing set of tasks with various IDs, creating a new task SHALL assign it an ID equal to the maximum existing Task_ID plus 1.
-
-**Validates: Requirements 6.3**
-
 ## Error Handling
 
 ### Validation Errors
@@ -398,53 +584,40 @@ _For any_ existing set of tasks with various IDs, creating a new task SHALL assi
 
 This feature will be tested using a dual approach:
 
-- **Property-based tests**: Verify universal properties across randomized inputs (100+ iterations per property)
-- **Example-based unit tests**: Verify specific examples, edge cases, and error conditions
+- **Four-layer acceptance tests**: Executable specifications in Gherkin translated to test code
+- **Unit tests**: Specific examples, edge cases, and error conditions (~20-30 tests)
 
-### Property-Based Testing
+### Four-Layer Test Architecture
 
-**Library**: `hypothesis` (Python property-based testing library)
+**Layer 1: Test Cases** (`tests/acceptance/test_task_creation.py`)
 
-**Configuration**: Minimum 100 iterations per property test to ensure comprehensive input coverage
+- Written in plain domain language matching Gherkin scenarios
+- No technical details (no file paths, no JSON, no HTTP)
+- Example: "Given the task tracker is ready, when the user creates a task with title 'Write docs', then a task exists with title 'Write docs'"
 
-**Test Organization**:
+**Layer 2: DSL** (`tests/acceptance/story_dsl.py`)
 
-- Location: `tests/unit/test_store_properties.py`
-- Each property from the design document maps to one property-based test
-- Each test tagged with comment: `# Feature: task-creation-and-storage, Property N: [property text]`
+- Domain-specific language methods that compose driver operations
+- Methods named after user actions: `create_task_with_tags(title, tags)`, `list_all_tasks()`
+- Composes multiple driver calls (not single-line proxies)
+- Holds all assertions in domain terms
 
-**Property Test Examples**:
+**Layer 3: Protocol Driver** (`tests/acceptance/system_driver.py`)
 
-```python
-from hypothesis import given, strategies as st
+- Elementary calls to application modules
+- One module call per method
+- Example: `driver.create_task(title)` calls `TaskStore.create_task()`
+- Driver imports define the application structure
 
-# Feature: task-creation-and-storage, Property 1: Task Creation Preserves Title
-@given(title=st.text(min_size=1).filter(lambda s: s.strip()))
-def test_task_creation_preserves_title(title):
-    store = TaskStore(JSONFileBackend())
-    task = store.create_task(title=title)
-    assert task["title"] == title
+**Layer 4: System Under Test**
 
-# Feature: task-creation-and-storage, Property 5: Task ID Uniqueness
-@given(num_tasks=st.integers(min_value=1, max_value=100))
-def test_task_id_uniqueness(num_tasks):
-    store = TaskStore(JSONFileBackend())
-    tasks = [store.create_task(title=f"Task {i}") for i in range(num_tasks)]
-    ids = [task["id"] for task in tasks]
-    assert len(ids) == len(set(ids))  # All IDs are unique
-```
-
-**Generators**:
-
-- Titles: Non-empty strings with various lengths and characters
-- Tags: Lists of strings (empty lists, single tags, multiple tags)
-- Status: Random choice from {"pending", "complete"}
-- Invalid inputs: Empty strings, whitespace, invalid status values
-- Task sequences: Random numbers of tasks with varying data
+- Application modules: `store.py`, `json_backend.py`, `cli.py`
+- Real implementations (no mocking of internal modules)
+- Only external third-party dependencies would be mocked
 
 ### Unit Testing
 
-**Purpose**: Test specific examples, edge cases, and error conditions not covered by properties
+**Purpose**: Test specific examples, edge cases, and error conditions
 
 **Location**: `tests/unit/test_store.py`, `tests/unit/test_json_backend.py`
 
@@ -463,47 +636,22 @@ def test_task_id_uniqueness(num_tasks):
 - Special characters in titles (unicode, emojis, newlines)
 - Large tag lists (100+ tags)
 - Empty tag lists
-- Concurrent task creation (if applicable)
-
-### Four-Layer Test Architecture
-
-**Layer 1: Test Cases** (`tests/acceptance/test_task_creation.py`)
-
-- Written in plain domain language
-- No technical details (no file paths, no JSON, no HTTP)
-- Example: "Given I have created 3 tasks, when I list all tasks, then I see 3 tasks"
-
-**Layer 2: DSL** (`tests/acceptance/story_dsl.py`)
-
-- Domain-specific language methods
-- Compose multiple driver operations
-- Example: `create_task_with_tags(title, tags)` calls driver to create task and verify it exists
-
-**Layer 3: Protocol Driver** (`tests/acceptance/system_driver.py`)
-
-- Elementary calls to application modules
-- One module call per method
-- Example: `driver.create_task(title)` calls `TaskStore.create_task()`
-
-**Layer 4: System Under Test**
-
-- Application modules: `store.py`, `json_backend.py`, `cli.py`
-- Real implementations (no mocking of internal modules)
+- Whitespace-only titles
+- Invalid status values
 
 ### Test Coverage Goals
 
-- **Property tests**: 15 properties × 100 iterations = 1500+ test cases
-- **Unit tests**: ~20 example and edge case tests
-- **Acceptance tests**: ~10 end-to-end scenarios
-- **Total**: ~1530 test executions
+- **Acceptance tests**: ~30 Gherkin scenarios covering all requirements
+- **Unit tests**: ~20-30 example and edge case tests
+- **Total**: ~50-60 test cases
 
 ### Testing Best Practices
 
 1. **Tests First**: Write tests before implementation (TDD/ATDD)
 2. **Real Implementations**: Use real TaskStore, JSONFileBackend (no mocking internal code)
 3. **Isolated Tests**: Each test creates its own temporary storage location
-4. **Fast Tests**: Property tests should complete in < 5 seconds total
-5. **Clear Failures**: Test failures should clearly indicate which property was violated
+4. **Fast Tests**: All tests should complete in < 5 seconds total
+5. **Clear Failures**: Test failures should clearly indicate which behavior was violated
 
 ### Test Execution
 
@@ -511,14 +659,11 @@ def test_task_id_uniqueness(num_tasks):
 # Run all tests
 make test
 
-# Run only property-based tests
-pytest tests/unit/test_store_properties.py -v
+# Run only acceptance tests
+make test-acceptance
 
 # Run only unit tests
 make test-unit
-
-# Run only acceptance tests
-make test-acceptance
 
 # Run with coverage
 pytest --cov=task_tracker --cov-report=html
