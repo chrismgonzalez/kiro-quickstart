@@ -13,11 +13,12 @@ Every spec follows a **TWO-PHASE** approach:
 **Phase 1: RED - Write ALL Tests**
 
 1. Scaffold acceptance test infrastructure (all 4 layers)
-2. Write unit tests for every component
-3. All tests FAIL - this is the complete RED state
-4. Natural session break point
+2. Create module stubs (empty classes, functions with `pass` or `raise NotImplementedError`)
+3. Write unit tests for every component
+4. All tests FAIL - this is the complete RED state
+5. Natural session break point
 
-**Phase 2: GREEN - Implement Everything** 5. Implement components one by one 6. Run tests until GREEN 7. Refactor as needed (keep GREEN)
+**Phase 2: GREEN - Implement Everything** 6. Implement components one by one 7. Run tests until GREEN 8. Refactor as needed (keep GREEN)
 
 ## Critical Rules
 
@@ -48,12 +49,19 @@ Every spec follows a **TWO-PHASE** approach:
   - All tests will FAIL - that's the starting point
   - _Requirements: [all]_
 
-- [ ] 2. Write unit tests for <Component A> (RED)
+- [ ] 2. Create module stubs for all components (RED)
+  - Create src/<package>/<module_a>.py with empty classes/functions
+  - Use `pass` or `raise NotImplementedError` for method bodies
+  - Ensures imports resolve and tests can run
+  - Establishes true RED state (tests run but fail)
+  - _Requirements: [all]_
+
+- [ ] 3. Write unit tests for <Component A> (RED)
   - Unit tests: [list specific cases and edge cases]
   - Tests will FAIL - no implementation yet
   - _Requirements: X.Y_
 
-- [ ] 3. Write unit tests for <Component B> (RED)
+- [ ] 4. Write unit tests for <Component B> (RED)
   - Unit tests: [list specific cases and edge cases]
   - Tests will FAIL - no implementation yet
   - _Requirements: X.Y_
@@ -63,18 +71,21 @@ Every spec follows a **TWO-PHASE** approach:
 - [ ] N. Checkpoint - Phase 1 Complete (RED state verified)
   - All acceptance tests exist and FAIL
   - All unit tests exist and FAIL
+  - All modules exist as stubs (imports resolve)
   - Complete RED state achieved
   - **Session break point - user can start new session for Phase 2**
 
 ## Phase 2: GREEN - Implement All Components
 
 - [ ] N+1. Implement <Component A> (GREEN)
+  - Replace stub with real implementation
   - [Implementation details]
   - Run Component A unit tests until GREEN
   - Acceptance tests still RED (expected)
   - _Requirements: X.Y_
 
 - [ ] N+2. Implement <Component B> (GREEN)
+  - Replace stub with real implementation
   - [Implementation details]
   - Run Component B unit tests until GREEN
   - Acceptance tests may start passing
@@ -105,11 +116,12 @@ Every spec follows a **TWO-PHASE** approach:
 ```markdown
 ## Phase 1: RED
 
-- [ ] 1. Write tests for data models (RED)
+- [ ] 1. Create module stubs (RED)
+- [ ] 2. Write tests for data models (RED)
 
 ## Phase 2: GREEN
 
-- [ ] 2. Implement data models (GREEN)
+- [ ] 3. Implement data models (GREEN)
 ```
 
 ### ❌ Wrong: Interleaving tests and implementation
@@ -126,14 +138,15 @@ Every spec follows a **TWO-PHASE** approach:
 ```markdown
 ## Phase 1: RED
 
-- [ ] 1. Write tests for Component A (RED)
-- [ ] 2. Write tests for Component B (RED)
-- [ ] 3. Checkpoint - Phase 1 complete (session break)
+- [ ] 1. Create module stubs (RED)
+- [ ] 2. Write tests for Component A (RED)
+- [ ] 3. Write tests for Component B (RED)
+- [ ] 4. Checkpoint - Phase 1 complete (session break)
 
 ## Phase 2: GREEN
 
-- [ ] 4. Implement Component A (GREEN)
-- [ ] 5. Implement Component B (GREEN)
+- [ ] 5. Implement Component A (GREEN)
+- [ ] 6. Implement Component B (GREEN)
 ```
 
 ### ❌ Wrong: Mixed test/implementation in same task
@@ -149,13 +162,17 @@ Every spec follows a **TWO-PHASE** approach:
 ```markdown
 ## Phase 1: RED
 
-- [ ] 2. Write tests for JSONFileBackend (RED)
+- [ ] 2. Create JSONFileBackend stub (RED)
+  - Empty class with method signatures
+  - Methods raise NotImplementedError
+
+- [ ] 3. Write tests for JSONFileBackend (RED)
   - Unit tests: persistence, validation, edge cases
 
 ## Phase 2: GREEN
 
 - [ ] 5. Implement JSONFileBackend (GREEN)
-  - Implement file I/O operations
+  - Replace NotImplementedError with real file I/O
   - Run tests until GREEN
 ```
 
@@ -172,13 +189,14 @@ Every spec follows a **TWO-PHASE** approach:
 ## Phase 1: RED
 
 - [ ] 1. Scaffold acceptance tests (RED)
-- [ ] 2-4. Write all unit tests (RED)
-- [ ] 5. Checkpoint - Phase 1 complete
+- [ ] 2. Create all module stubs (RED)
+- [ ] 3-6. Write all unit tests (RED)
+- [ ] 7. Checkpoint - Phase 1 complete
 
 ## Phase 2: GREEN
 
-- [ ] 6-10. Implement components to make tests pass
-- [ ] 11. Final checkpoint - all tests GREEN
+- [ ] 8-12. Implement components to make tests pass
+- [ ] 13. Final checkpoint - all tests GREEN
 ```
 
 ---
@@ -186,12 +204,13 @@ Every spec follows a **TWO-PHASE** approach:
 ## Key Reminders
 
 1. **Two-phase approach** - Phase 1 writes ALL tests (RED), Phase 2 implements ALL components (GREEN)
-2. **Session break at phase boundary** - Complete Phase 1, then user can start fresh session for Phase 2
-3. **Acceptance tests first** - Scaffold all four layers at start of Phase 1
-4. **Driver imports define architecture** - Layer 3 imports show what modules to build
-5. **Checkpoints verify state** - Confirm RED state at end of Phase 1, GREEN state at end of Phase 2
-6. **Reference requirements** - Each task notes which requirements it satisfies
-7. **No interleaving** - Never mix test writing and implementation within a phase
+2. **Module stubs enable true RED** - Create empty classes/functions with `pass` or `raise NotImplementedError` so imports resolve and tests can run
+3. **Session break at phase boundary** - Complete Phase 1, then user can start fresh session for Phase 2
+4. **Acceptance tests first** - Scaffold all four layers at start of Phase 1
+5. **Driver imports define architecture** - Layer 3 imports show what modules to build
+6. **Checkpoints verify state** - Confirm RED state at end of Phase 1, GREEN state at end of Phase 2
+7. **Reference requirements** - Each task notes which requirements it satisfies
+8. **No interleaving** - Never mix test writing and implementation within a phase
 
 ---
 
