@@ -1,5 +1,6 @@
 ---
 inclusion: auto
+description: Quick reference for ATDD testing practices and when to use the atdd skill for detailed guidance
 ---
 
 # Testing Guide
