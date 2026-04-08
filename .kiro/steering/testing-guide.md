@@ -20,31 +20,41 @@ Follow the red-green-refactor cycle at both levels.
 
 ### Test Structure
 
-All tests use Given-When-Then format to describe behavior:
+All tests use the namespace pattern with `given`, `when`, `then` objects:
 
-```typescript
-describe("Feature: [Feature Name]", () => {
-  describe("Scenario: [Scenario Name]", () => {
-    test("Given [context] When [action] Then [outcome]", async () => {
-      // Test implementation
-    });
-  });
-});
+```python
+def test_should_allow_user_to_buy_book():
+    """Scenario: User purchases a book
+    Given a user at the store
+    When the user searches for "Continuous Delivery"
+    And the user selects book by author "Jez Humble"
+    And the user adds selected book to basket
+    And the user proceeds to checkout
+    And the user pays with credit card
+    Then item has been purchased
+    """
+    user = given.a_user_at_the_store()
+    user = when.user_searches_for_book(user, "Continuous Delivery")
+    user = when.user_selects_book_by_author(user, "Jez Humble")
+    user = when.user_adds_selected_book_to_basket(user)
+    user = when.user_proceeds_to_checkout(user)
+    user = when.user_pays_with_credit_card(user)
+    then.item_has_been_purchased(user)
 ```
+
+**Key principles:**
+
+- `given.*` methods set up world state and return state objects
+- `when.*` methods perform actions, accept and return state objects
+- `then.*` methods make assertions on state objects
+- State flows through the test via return values
+- Docstring describes the scenario in Gherkin format
 
 ### Test Locations
 
 - **Acceptance tests** (story-level): `tests/acceptance/`
 - **Unit tests** (sub-task-level): `tests/unit/`
 - **Shared test infrastructure**: `tests/shared/`
-
-### Running Tests
-
-```bash
-npm test                  # All tests
-npm run test:watch        # Watch mode
-npm run test:coverage     # Coverage report
-```
 
 ### When to Use the ATDD Skill
 

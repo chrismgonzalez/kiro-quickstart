@@ -55,10 +55,17 @@ When creating or reviewing specs:
 All tests must follow the four-layer architecture from the `atdd` skill:
 
 - **Layer 1 (Test Cases)**: Executable specifications in plain domain language
+  - Use the namespace pattern: `given.*`, `when.*`, `then.*` methods
+  - State flows through tests via return values (e.g., `user = given.a_user_at_the_store()`)
   - No HTTP, JSON, database, SQL, or technical details
   - Use language from the user story ("create task", not "POST /tasks")
   - Could be read by a non-technical stakeholder
+  - Docstring describes scenario in Gherkin format
 - **Layer 2 (DSL)**: Domain-specific language that composes driver operations
+  - Single DSL class with `given`, `when`, `then` as aliases to the same instance
+  - `given.*` methods set up world state and return state objects
+  - `when.*` methods perform actions, accept and return state objects
+  - `then.*` methods make assertions on state objects
   - Methods named after user actions, not system interactions
   - Must compose multiple driver calls — never single-line proxies
   - Holds all assertions in domain terms (no HTTP codes, no JSON field names)
