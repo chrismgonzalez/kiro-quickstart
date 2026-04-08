@@ -21,7 +21,8 @@ def validate_title(title: str) -> None:
     Raises:
         ValueError: If title is invalid
     """
-    raise NotImplementedError
+    if not title or not title.strip():
+        raise ValueError("Title cannot be empty")
 
 
 def validate_status(status: str) -> None:
@@ -33,7 +34,9 @@ def validate_status(status: str) -> None:
     Raises:
         ValueError: If status is invalid
     """
-    raise NotImplementedError
+    valid_statuses = ["pending", "complete"]
+    if status not in valid_statuses:
+        raise ValueError(f"Invalid status. Must be 'pending' or 'complete'")
 
 
 def validate_task_id(task_id: int) -> None:
@@ -45,7 +48,8 @@ def validate_task_id(task_id: int) -> None:
     Raises:
         ValueError: If task ID is invalid
     """
-    raise NotImplementedError
+    if task_id <= 0:
+        raise ValueError("Task ID must be a positive integer")
 
 
 def validate_timestamp(timestamp: str) -> None:
@@ -57,4 +61,16 @@ def validate_timestamp(timestamp: str) -> None:
     Raises:
         ValueError: If timestamp is invalid
     """
-    raise NotImplementedError
+    from datetime import datetime
+    
+    if not timestamp:
+        raise ValueError("Timestamp cannot be empty")
+    
+    # Require 'T' separator for ISO format (date and time required)
+    if 'T' not in timestamp:
+        raise ValueError(f"Invalid ISO timestamp format: {timestamp}")
+    
+    try:
+        datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+    except (ValueError, AttributeError):
+        raise ValueError(f"Invalid ISO timestamp format: {timestamp}")

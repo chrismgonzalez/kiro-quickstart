@@ -8,6 +8,7 @@ All assertions are in domain terms.
 from typing import List, Dict, Any
 from datetime import datetime
 from tests.acceptance.system_driver import SystemDriver
+from task_tracker.models import Task
 
 
 class StoryDsl:
@@ -61,7 +62,15 @@ class StoryDsl:
     def tasks_exist_with_ids(self, state: Dict[str, Any], ids: List[int]) -> Dict[str, Any]:
         """Set up world state with tasks having specific IDs."""
         for task_id in ids:
-            task = self.driver.create_task(f"Task {task_id}")
+            # Create task directly in backend with specific ID to test ID generation logic
+            task: Task = {
+                "id": task_id,
+                "title": f"Task {task_id}",
+                "tags": [],
+                "status": "pending",
+                "created_at": "2024-01-01T00:00:00"
+            }
+            self.driver.backend.save_task(task)
             state["tasks"].append(task)
         return state
 

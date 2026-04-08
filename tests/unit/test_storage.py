@@ -247,17 +247,15 @@ def test_task_ids_are_unique():
     assert len(task_ids) == len(set(task_ids))
 
 
-# Edge case: Empty title handling (validation should happen at CLI layer, but test store behavior)
+# Edge case: Empty title handling (validation happens at both CLI and store layers)
 def test_create_task_with_empty_title():
-    """Edge case: Store should handle empty title (validation at CLI layer)."""
+    """Edge case: Store validates empty title (defense in depth)."""
     backend = FakeBackend()
     store = TaskStore(backend)
     
-    # Store itself doesn't validate - it creates what it's given
-    # This tests that store doesn't crash with empty title
-    task = store.create_task("")
-    
-    assert task["title"] == ""
+    # Store validates inputs (defense in depth, even though CLI also validates)
+    with pytest.raises(ValueError, match="Title cannot be empty"):
+        store.create_task("")
 
 
 # Edge case: None tags defaults to empty list

@@ -1,7 +1,8 @@
 """Task store for managing task persistence and retrieval."""
 
+from datetime import datetime
 from typing import List, Optional
-from task_tracker.models import Task
+from task_tracker.models import Task, validate_title, validate_status
 from task_tracker.storage import StorageBackend
 
 
@@ -31,8 +32,23 @@ class TaskStore:
             
         Returns:
             The created task
+            
+        Raises:
+            ValueError: If title or status is invalid
         """
-        raise NotImplementedError
+        # Validate inputs (defense in depth - CLI also validates)
+        validate_title(title)
+        validate_status(status)
+        
+        task: Task = {
+            "id": self._generate_next_id(),
+            "title": title,
+            "tags": tags if tags is not None else [],
+            "status": status,
+            "created_at": datetime.now().isoformat()
+        }
+        self.backend.save_task(task)
+        return task
 
     def get_all_tasks(self) -> List[Task]:
         """Retrieve all tasks in creation order.
@@ -40,7 +56,7 @@ class TaskStore:
         Returns:
             List of all tasks
         """
-        raise NotImplementedError
+        return self.backend.load_tasks()
 
     def get_task(self, task_id: int) -> Optional[Task]:
         """Retrieve a task by ID.
@@ -51,7 +67,7 @@ class TaskStore:
         Returns:
             The task if found, None otherwise
         """
-        raise NotImplementedError
+        return self.backend.get_task_by_id(task_id)
 
     def _generate_next_id(self) -> int:
         """Generate the next sequential task ID.
@@ -59,4 +75,7 @@ class TaskStore:
         Returns:
             The next task ID
         """
-        raise NotImplementedError
+        tasks = self.backend.load_tasks()
+        if not tasks:
+            return 1
+        return max(task["id"] for task in tasks) + 1
