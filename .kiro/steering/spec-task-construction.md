@@ -42,9 +42,11 @@ Every spec follows a **TWO-PHASE** approach:
 ## Phase 1: RED - Write All Tests
 
 - [ ] 1. Scaffold four-layer acceptance test infrastructure (RED)
-  - Create tests/acceptance/test\_<story>.py (Layer 1: test cases)
-  - Create tests/acceptance/story_dsl.py (Layer 2: DSL)
+  - Create tests/acceptance/test\_<story>.py (Layer 1: test cases using namespace pattern)
+  - Create tests/acceptance/story_dsl.py (Layer 2: DSL with given/when/then namespaces)
   - Create tests/acceptance/system_driver.py (Layer 3: driver)
+  - Use namespace pattern: `given.*`, `when.*`, `then.*` methods
+  - State flows through tests via return values
   - Driver imports define application module structure
   - All tests will FAIL - that's the starting point
   - _Requirements: [all]_
@@ -102,7 +104,93 @@ Every spec follows a **TWO-PHASE** approach:
 
 ---
 
+## Namespace Pattern Example
+
+### Layer 1: Test Case (Namespace Pattern)
+
+```python
+def test_user_creates_task_with_title(given, when, then):
+    """Scenario: User creates task with title
+    Given the task tracker is ready
+    When the user creates a task with title "Write documentation"
+    Then a task exists with title "Write documentation"
+    """
+    tracker = given.task_tracker_is_ready()
+    tracker = when.user_creates_task(tracker, "Write documentation")
+    then.task_exists_with_title(tracker, "Write documentation")
+```
+
+### Layer 2: DSL (Namespace Implementation)
+
+```python
+class StoryDsl:
+    def __init__(self):
+        self.driver = SystemDriver()
+
+    # given: set up world state
+    def task_tracker_is_ready(self):
+        self.driver.clear_all_tasks()
+        return {"tasks": [], "next_id": 1}
+
+    # when: perform actions (compose driver calls)
+    def user_creates_task(self, tracker, title):
+        task = self.driver.create_task(title)
+        tracker["tasks"].append(task)
+        tracker["next_id"] += 1
+        return tracker
+
+    # then: make assertions
+    def task_exists_with_title(self, tracker, title):
+        matching = [t for t in tracker["tasks"] if t["title"] == title]
+        assert len(matching) == 1, f"Expected 1 task with title '{title}', found {len(matching)}"
+
+# Create namespace aliases
+dsl = StoryDsl()
+given = when = then = dsl
+```
+
+### Layer 3: Protocol Driver
+
+```python
+from task_tracker.store import TaskStore
+
+class SystemDriver:
+    def __init__(self):
+        self.store = TaskStore()
+
+    def clear_all_tasks(self):
+        self.store.clear()
+
+    def create_task(self, title: str) -> dict:
+        return self.store.create(title=title)
+```
+
+---
+
 ## Anti-Patterns
+
+### ❌ Wrong: Method prefix pattern (verbose, less reusable)
+
+```python
+def test_create_task_with_title_only(story: TaskStory):
+    story.given_a_fresh_task_tracker()
+    story.when_i_create_a_task_with_title("Buy groceries")
+    story.then_the_task_should_be_stored_with_status("pending")
+```
+
+### ✅ Correct: Namespace pattern (clean, composable)
+
+```python
+def test_user_creates_task_with_title(given, when, then):
+    """Scenario: User creates task with title
+    Given the task tracker is ready
+    When the user creates a task with title "Buy groceries"
+    Then the task should be stored with status "pending"
+    """
+    tracker = given.task_tracker_is_ready()
+    tracker = when.user_creates_task(tracker, "Buy groceries")
+    then.task_has_status(tracker, "pending")
+```
 
 ### ❌ Wrong: Implementation before tests
 
