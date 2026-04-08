@@ -1,3 +1,7 @@
+---
+description: Maps every component, function, and module to its exact file location. Keep updated when adding new code.
+---
+
 # Code Index
 
 ## Project Overview
