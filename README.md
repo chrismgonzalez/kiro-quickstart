@@ -13,7 +13,141 @@ This repository contains:
 3. **Complete Test Suite** - Acceptance and unit tests following ATDD principles
 4. **Documentation** - Comprehensive guides for development, testing, and architecture
 
+## Prerequisites
+
+Before you begin, you'll need to install the required tooling for your operating system.
+
+### Installing uv (Python Package Manager)
+
+uv is a fast Python package manager that handles dependencies and virtual environments.
+
+**macOS/Linux:**
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
+
+**Alternative (using pip):**
+
+```bash
+pip install uv
+```
+
+Verify installation:
+
+```bash
+uv --version
+```
+
+### Installing Make
+
+Make is used to run common development commands.
+
+**macOS:**
+
+```bash
+# Using Homebrew
+brew install make
+
+# Or use the built-in make (already installed)
+make --version
+```
+
+**Linux:**
+
+```bash
+# Debian/Ubuntu
+sudo apt-get install build-essential
+
+# Fedora/RHEL
+sudo dnf install make
+
+# Arch
+sudo pacman -S make
+```
+
+**Windows:**
+
+Option 1 - Using Chocolatey:
+
+```powershell
+choco install make
+```
+
+Option 2 - Using Scoop:
+
+```powershell
+scoop install make
+```
+
+Option 3 - Using WSL (Windows Subsystem for Linux):
+
+```bash
+# Install WSL first, then use Linux commands above
+wsl --install
+```
+
+Option 4 - Run commands directly without Make:
+
+```bash
+# Instead of 'make install', use:
+uv sync
+
+# Instead of 'make test', use:
+uv run pytest
+
+# Instead of 'make run', use:
+uv run task-tracker
+```
+
+### Installing Python 3.11+
+
+**macOS:**
+
+```bash
+# Using Homebrew
+brew install python@3.11
+```
+
+**Linux:**
+
+```bash
+# Debian/Ubuntu
+sudo apt-get install python3.11
+
+# Fedora/RHEL
+sudo dnf install python3.11
+
+# Arch
+sudo pacman -S python
+```
+
+**Windows:**
+Download from [python.org](https://www.python.org/downloads/) or use:
+
+```powershell
+# Using Chocolatey
+choco install python
+
+# Using Scoop
+scoop install python
+```
+
+Verify installation:
+
+```bash
+python3 --version  # or python --version on Windows
+```
+
 ## Quick Start
+
+Once you have the prerequisites installed:
 
 ```bash
 # Install dependencies
