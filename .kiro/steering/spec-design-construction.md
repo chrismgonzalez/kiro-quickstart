@@ -1,5 +1,6 @@
 ---
-inclusion: manual
+inclusion: fileMatch
+fileMatchPattern: ["**/design.md"]
 description: Guide for constructing spec design.md files by translating EARS requirements into Gherkin behaviors and technical design
 ---
 
