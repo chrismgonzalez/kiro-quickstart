@@ -1,25 +1,19 @@
+---
+description: Core development workflow, coding standards, ATDD principles, and common commands for the Task Tracker CLI project
+---
+
 # Development Guide
-
-## Quick Start
-
-```sh
-make install               # install dependencies
-make test                  # run all tests
-make run                   # run the CLI
-make run ARGS="--help"     # CLI help
-
-# Or use uv directly
-uv sync                    # install dependencies
-uv run pytest              # run all tests
-uv run pytest -v           # verbose test output
-uv run pytest tests/acceptance/  # acceptance tests only
-uv run pytest tests/unit/        # unit tests only
-uv run task-tracker        # run CLI (currently hello world)
-```
 
 ## Codebase Index
 
 When searching the code during research, debugging, or implementation, read `code-index.md` (steering) — it maps every component, function, and utility to its exact file and location.
+
+## Spec Construction
+
+When creating or reviewing specs:
+
+- **design.md**: Read `spec-design-construction.md` (steering) — translate EARS requirements into Gherkin behaviors, then add technical design details.
+- **tasks.md**: Read `spec-task-construction.md` (steering) — follow strict ATDD ordering: acceptance tests first, then RED-GREEN-REFACTOR for each component
 
 ## Development Guidelines
 
@@ -27,11 +21,17 @@ When searching the code during research, debugging, or implementation, read `cod
 
 2. Tests first. Write or update the test before writing implementation code. If a behavior changes, update the test first, then make it pass. Follow the red-green-refactor cycle.
 
-3. Author the simplest implementation that works. Do not over-engineer. Start with the simplest code that is correct, readable, and easy to extend. Avoid abstractions not justified by a current need.
+3. All tests must follow the four-layer architecture from the atdd skill:
+   - **Layer 1 (Test Cases)**: Written in pure domain language. No HTTP, JSON, database, or technical details. Could be read by a non-technical stakeholder.
+   - **Layer 2 (DSL)**: Composes driver operations into scenarios. DSL methods must compose multiple driver calls, not proxy single calls. Holds all assertions in domain terms.
+   - **Layer 3 (Protocol Driver)**: Elementary operations on application modules. Each method calls exactly one module. Driver imports define the application's module structure.
+   - **Layer 4 (System Under Test)**: Real application modules. Use real implementations, mock only external third parties you don't control.
 
-4. Do not rewrite complete files — only fix what needs to be fixed.
+4. Author the simplest implementation that works. Do not over-engineer. Start with the simplest code that is correct, readable, and easy to extend. Avoid abstractions not justified by a current need.
 
-5. No need for abundant comments or summary documentation unless asked.
+5. Do not rewrite complete files — only fix what needs to be fixed.
+
+6. No need for abundant comments or summary documentation unless asked.
 
 ## Technology Stack
 
@@ -52,11 +52,32 @@ When searching the code during research, debugging, or implementation, read `cod
 
 ### Testing
 
-- Use the four-layer architecture (test cases → DSL → protocol driver → SUT)
-- Test cases in plain domain language (no HTTP, no JSON, no file paths)
-- DSL methods compose driver calls (no single-line proxies)
-- Driver methods are elementary (one module call per method)
-- Use real implementations, mock only external third parties
+All tests must follow the four-layer architecture from the `atdd` skill:
+
+- **Layer 1 (Test Cases)**: Executable specifications in plain domain language
+  - No HTTP, JSON, database, SQL, or technical details
+  - Use language from the user story ("create task", not "POST /tasks")
+  - Could be read by a non-technical stakeholder
+- **Layer 2 (DSL)**: Domain-specific language that composes driver operations
+  - Methods named after user actions, not system interactions
+  - Must compose multiple driver calls — never single-line proxies
+  - Holds all assertions in domain terms (no HTTP codes, no JSON field names)
+- **Layer 3 (Protocol Driver)**: Elementary operations on application modules
+  - Each method calls exactly one module (one responsibility)
+  - Driver imports define the application's module structure
+  - Minimal mocking (see mocking policy below)
+- **Layer 4 (System Under Test)**: Real application modules
+  - For acceptance tests: application modules called directly (not HTTP server)
+  - For unit tests: individual module under test
+
+**Mocking Policy:**
+
+- Your own modules: Use real implementations
+- AWS services (DynamoDB, S3, etc.): Use real via moto/localstack
+- File system, temp data: Use real (temp files, tmp dirs)
+- External OAuth, payment gateways, third-party APIs: Mock (not under your control)
+
+**Critical Rule:** If a DSL `when` method has a single line calling the driver, the driver is doing too much. Composition of steps belongs in the DSL, not hidden inside the driver.
 
 ## File Structure
 
@@ -87,13 +108,30 @@ tests/
 
 ## Adding New Features
 
-1. Write acceptance test first (RED)
-2. Run test to confirm it fails
-3. Identify modules needed (look at driver imports)
-4. Write unit tests for each module (RED)
-5. Implement minimal code (GREEN)
-6. Refactor if needed
-7. Update code-index.md
+Follow the ATDD workflow from the `atdd` skill:
+
+1. **Write acceptance test first (RED)**
+   - Layer 1: Test case in domain language
+   - Layer 2: DSL methods that compose driver calls
+   - Layer 3: Protocol driver with elementary module calls
+   - Driver imports define what modules you'll need to build
+   - Test will fail — that's the point
+
+2. **Run test to confirm it fails** (RED state confirmed)
+
+3. **Identify modules needed** (look at driver imports in Layer 3)
+
+4. **For each module, write unit tests first (RED)**
+   - Test specific examples and edge cases
+   - Tests will fail — no implementation yet
+
+5. **Implement minimal code (GREEN)**
+   - Write simplest implementation to pass tests
+   - Run tests until they pass
+
+6. **Refactor if needed** (keep tests GREEN)
+
+7. **Update code-index.md** with new modules and functions
 
 ## Common Commands
 
