@@ -6,7 +6,7 @@ This implementation follows strict ATDD principles with a two-phase approach. Ph
 
 ## Phase 1: RED - Write All Tests
 
-- [ ] 1. Scaffold four-layer acceptance test infrastructure (RED)
+- [x] 1. Scaffold four-layer acceptance test infrastructure (RED)
   - Create tests/acceptance/test_task_creation.py (Layer 1: test cases using namespace pattern)
   - Create tests/acceptance/story_dsl.py (Layer 2: DSL with given/when/then namespaces)
   - Create tests/acceptance/system_driver.py (Layer 3: elementary calls to modules)
@@ -17,7 +17,7 @@ This implementation follows strict ATDD principles with a two-phase approach. Ph
   - All acceptance tests will FAIL - this is the starting RED state
   - _Requirements: 1.1-1.6, 2.1-2.6, 4.1-4.5, 5.1-5.5, 6.1-6.5_
 
-- [ ] 2. Create module stubs for all components (RED)
+- [x] 2. Create module stubs for all components (RED)
   - Create src/task_tracker/models.py with Task TypedDict and validation function stubs
   - Create src/task_tracker/storage.py with StorageBackend Protocol definition
   - Create src/task_tracker/store.py with TaskStore class (methods raise NotImplementedError)
@@ -28,48 +28,48 @@ This implementation follows strict ATDD principles with a two-phase approach. Ph
   - Establishes true RED state (tests run but fail)
   - _Requirements: 1.1-1.6, 2.1-2.6, 3.1-3.5, 4.1-4.5, 5.1-5.5, 6.1-6.5_
 
-- [ ] 3. Write unit tests for Task model (RED)
+- [x] 3. Write unit tests for Task model (RED)
   - Unit tests: Task structure validation, field types, default values
   - Edge cases: empty title, invalid status, special characters, unicode
   - Tests will FAIL - no implementation yet
   - _Requirements: 4.1-4.5_
 
-- [ ] 4. Write unit tests for StorageBackend protocol (RED)
+- [x] 4. Write unit tests for StorageBackend protocol (RED)
   - Unit tests: protocol definition, method signatures
   - Tests will FAIL - no implementation yet
   - _Requirements: 3.1-3.2_
 
-- [ ] 5. Write unit tests for JSONFileBackend (RED)
+- [x] 5. Write unit tests for JSONFileBackend (RED)
   - Unit tests: file creation, directory creation, read/write operations
   - Edge cases: missing directory, corrupted JSON, permission errors, empty file
   - Tests will FAIL - no implementation yet
   - _Requirements: 2.1-2.6, 3.2_
 
-- [ ] 6. Write unit tests for TaskStore (RED)
+- [x] 6. Write unit tests for TaskStore (RED)
   - Unit tests: create_task, get_all_tasks, get_task, ID generation
   - Edge cases: empty storage, non-existent IDs, sequential IDs, max ID + 1
   - Tests will FAIL - no implementation yet
   - _Requirements: 1.1-1.6, 5.1-5.5, 6.1-6.5_
 
-- [ ] 7. Write unit tests for CLI commands (RED)
+- [x] 7. Write unit tests for CLI commands (RED)
   - Unit tests: create command, list command, get command
   - Edge cases: empty title validation, invalid status validation
   - Tests will FAIL - no implementation yet
   - _Requirements: 1.1-1.4, 4.1-4.2, 5.1-5.4_
 
-- [ ] 8. Write unit tests for TaskFormatter (RED)
+- [x] 8. Write unit tests for TaskFormatter (RED)
   - Unit tests: format single task, format task list, format empty list
   - Edge cases: long titles, many tags, special characters
   - Tests will FAIL - no implementation yet
   - _Requirements: 5.2_
 
-- [ ] 9. Write unit tests for TaskFilter (RED)
+- [x] 9. Write unit tests for TaskFilter (RED)
   - Unit tests: filter by status, filter by tags, filter by ID
   - Edge cases: no matches, multiple filters, empty task list
   - Tests will FAIL - no implementation yet
   - _Requirements: 3.4, 5.1-5.4_
 
-- [ ] 10. Checkpoint - Phase 1 Complete (RED state verified)
+- [x] 10. Checkpoint - Phase 1 Complete (RED state verified)
   - All acceptance tests exist and FAIL
   - All unit tests exist and FAIL
   - All modules exist as stubs (imports resolve)
