@@ -30,10 +30,10 @@ These files are automatically included in every interaction:
 
 These files are referenced explicitly when needed:
 
-| File                          | Description                                                                         | When to Use                                       |
-| ----------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `spec-design-construction.md` | Guide for translating EARS requirements into Gherkin behaviors and technical design | When creating or reviewing `design.md` for a spec |
-| `spec-task-construction.md`   | Guide for constructing tasks.md following strict ATDD principles                    | When creating or reviewing `tasks.md` for a spec  |
+| File                          | Description                                                                                       | When to Use                                       |
+| ----------------------------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `spec-design-construction.md` | Guide for translating EARS requirements into Gherkin behaviors and technical design               | When creating or reviewing `design.md` for a spec |
+| `spec-task-construction.md`   | Guide for constructing tasks.md with two-phase ATDD: Phase 1 writes all tests, Phase 2 implements | When creating or reviewing `tasks.md` for a spec  |
 
 ## Usage Examples
 
@@ -86,6 +86,8 @@ spec-design-construction.md (manual)
 
 spec-task-construction.md (manual)
 ├── Used when: Creating/reviewing tasks.md
+├── Enforces: Two-phase approach (Phase 1: all tests, Phase 2: all implementation)
+├── Session break: Natural stopping point after Phase 1 (RED state complete)
 └── Works with: spec-design-construction.md, atdd skill
 
 code-index.md (always included)
@@ -99,3 +101,4 @@ code-index.md (always included)
 3. **Reference related files**: Help users discover related steering files
 4. **Update code-index.md frequently**: Keep it current as the codebase evolves
 5. **Test inclusion rules**: Verify auto-included files don't make context too large
+6. **Two-phase spec workflow**: Phase 1 writes all tests (RED), Phase 2 implements (GREEN) - natural session break between phases
