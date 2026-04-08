@@ -17,35 +17,36 @@ This repository contains:
 
 ```bash
 # Install dependencies
-uv sync
+make install
 
 # Run tests
-uv run pytest
+make test
 
 # Use the CLI
-uv run task-tracker add "Write acceptance test" --tags testing,atdd
-uv run task-tracker list
-uv run task-tracker complete 1
+uv run task-tracker
+# or
+make run
 ```
 
 ## Task Tracker CLI
 
-A proof-of-concept CLI demonstrating ATDD with the four-layer architecture.
+A proof-of-concept CLI demonstrating ATDD with the four-layer architecture. Currently a minimal "Hello World" implementation - features will be added using spec-driven development.
 
-### What This Demonstrates
+### What This Will Demonstrate
 
 1. **ATDD Four-Layer Architecture**
    - Layer 1: Test cases in plain domain language
    - Layer 2: DSL that composes driver operations
    - Layer 3: Protocol driver with elementary module calls
-   - Layer 4: Application modules (Store, Filter, Formatter)
+   - Layer 4: Application modules (to be implemented via specs)
 
 2. **Steering Documents**
    - Development guide with standards and quick commands
    - Code index mapping every module and function
    - Testing guide for quick ATDD reference
 
-3. **Test-First Development**
+3. **Spec-Driven Development**
+   - Features defined in `.kiro/specs/`
    - Acceptance tests written before implementation (RED)
    - Module boundaries derived from driver imports
    - Unit tests for each module
@@ -57,28 +58,25 @@ A proof-of-concept CLI demonstrating ATDD with the four-layer architecture.
 kiro-quickstart/
 ├── .kiro/                    # Kiro configuration
 │   ├── skills/               # On-demand guidance
-│   │   └── atdd.md          # Four-layer architecture guide
+│   │   ├── atdd.md          # Four-layer architecture guide
+│   │   └── docs.md          # Documentation sync skill
 │   ├── steering/             # Always-on context
 │   │   ├── development-guide.md
 │   │   ├── code-index.md
 │   │   └── testing-guide.md
-│   └── hooks/                # Automation
-│       └── test-on-save.kiro.hook
+│   ├── specs/                # Spec-driven development
+│   │   └── task-tracker-cli-poc/
+│   └── hooks/                # Automation (to be added)
 ├── src/
 │   └── task_tracker/
-│       ├── cli.py           # CLI interface (Click)
-│       ├── store.py         # Task persistence
-│       ├── filter.py        # Task filtering logic
-│       └── formatter.py     # Output formatting
+│       ├── __init__.py      # Package initialization
+│       └── cli.py           # CLI interface (hello world)
 ├── tests/
-│   ├── acceptance/          # Story-level tests
-│   │   ├── test_add_task_story.py
-│   │   ├── story_dsl.py
-│   │   └── system_driver.py
-│   └── unit/                # Component-level tests
-│       ├── test_store.py
-│       └── test_filter.py
-└── pyproject.toml
+│   ├── acceptance/          # Story-level tests (ready for spec)
+│   ├── unit/                # Component-level tests (ready for spec)
+│   └── test_smoke.py        # Infrastructure smoke tests
+├── Makefile                 # Development commands
+└── pyproject.toml           # Project configuration
 ```
 
 ## Development Workflow
@@ -163,6 +161,8 @@ For each feature:
 - Check `.kiro/steering/code-index.md` to navigate the codebase
 - See `.kiro/steering/testing-guide.md` for quick testing reference
 - Review `.kiro/steering/development-guide.md` for coding standards
+- Read `docs/ARCHITECTURE.md` for four-layer architecture deep dive
+- See `docs/MAKEFILE.md` for Makefile command reference
 
 ## Technology Stack
 
@@ -176,26 +176,32 @@ For each feature:
 
 ```bash
 # Development
+make install                     # install/update dependencies
+make run                         # run the CLI
+make run ARGS="--help"           # run with arguments
 uv sync                          # install/update dependencies
 uv add <package>                 # add new dependency
 
 # Testing
+make test                        # all tests
+make test-unit                   # unit tests only
+make test-acceptance             # acceptance tests only
 uv run pytest                    # all tests
 uv run pytest -v                 # verbose output
 uv run pytest -k "test_add"      # tests matching pattern
 uv run pytest --lf               # last failed tests
 uv run pytest -x                 # stop on first failure
-uv run pytest tests/acceptance/  # acceptance tests only
-uv run pytest tests/unit/        # unit tests only
 
-# CLI Usage
-uv run task-tracker add "Task title" --tags tag1,tag2
-uv run task-tracker list
-uv run task-tracker list --tag testing
-uv run task-tracker complete 1
-uv run task-tracker delete 1
-uv run task-tracker --help
+# CLI Usage (current hello world)
+uv run task-tracker              # prints "Hello, Task Tracker!"
+uv run task-tracker --help       # show help
+uv run task-tracker --version    # show version
+
+# Maintenance
+make clean                       # remove generated files
 ```
+
+> Full task management commands (add, list, complete, delete) will be implemented via spec-driven development.
 
 ## About Kiro
 

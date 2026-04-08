@@ -15,13 +15,32 @@
 
 ## Source Map
 
-_This section will be populated as modules are implemented._
+### Current Implementation
 
-### Planned Structure
+**src/task_tracker/**
+
+- `__init__.py` - Package initialization with version
+- `cli.py` - CLI entry point (hello world implementation)
+  - `cli()` - Main command that prints "Hello, Task Tracker!"
+
+**tests/**
+
+- `__init__.py` - Test package initialization
+- `test_smoke.py` - Infrastructure smoke tests
+  - `test_infrastructure()` - Verify pytest works
+  - `test_imports()` - Verify CLI module imports
+- `acceptance/__init__.py` - Acceptance test package (empty, ready for spec)
+- `unit/__init__.py` - Unit test package (empty, ready for spec)
+
+**Configuration:**
+
+- `pyproject.toml` - Project configuration, dependencies, pytest settings
+- `Makefile` - Development commands (install, test, run, clean)
+
+### Planned Modules (To Be Implemented via Spec)
 
 ```
 src/task_tracker/
-  cli.py           # CLI interface (Click)
   store.py         # Task persistence
   filter.py        # Task filtering logic
   formatter.py     # Output formatting
@@ -32,7 +51,9 @@ tests/acceptance/
   system_driver.py # Layer 3: Protocol driver
 
 tests/unit/
-  test_*.py        # Unit tests for individual modules
+  test_store.py    # Store module tests
+  test_filter.py   # Filter module tests
+  test_formatter.py # Formatter module tests
 ```
 
 ---

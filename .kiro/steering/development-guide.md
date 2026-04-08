@@ -3,12 +3,18 @@
 ## Quick Start
 
 ```sh
+make install               # install dependencies
+make test                  # run all tests
+make run                   # run the CLI
+make run ARGS="--help"     # CLI help
+
+# Or use uv directly
 uv sync                    # install dependencies
 uv run pytest              # run all tests
 uv run pytest -v           # verbose test output
 uv run pytest tests/acceptance/  # acceptance tests only
 uv run pytest tests/unit/        # unit tests only
-uv run task-tracker --help       # CLI help
+uv run task-tracker        # run CLI (currently hello world)
 ```
 
 ## Codebase Index
@@ -56,18 +62,18 @@ When searching the code during research, debugging, or implementation, read `cod
 
 ```
 src/task_tracker/
-  cli.py           # Click CLI interface
+  __init__.py      # Package initialization
+  cli.py           # Click CLI interface (hello world)
+
+  # To be implemented via spec:
   store.py         # Task persistence (JSON file)
   filter.py        # Task filtering logic
   formatter.py     # Output formatting
 
-tests/acceptance/
-  test_*.py        # Layer 1: Test cases
-  story_dsl.py     # Layer 2: Domain-specific language
-  system_driver.py # Layer 3: Protocol driver
-
-tests/unit/
-  test_*.py        # Unit tests for individual modules
+tests/
+  test_smoke.py    # Infrastructure smoke tests
+  acceptance/      # Layer 1: Test cases (ready for spec)
+  unit/            # Unit tests for modules (ready for spec)
 ```
 
 ## Naming Conventions
@@ -93,20 +99,24 @@ tests/unit/
 
 ```sh
 # Development
+make install                     # install/update dependencies
+make run                         # run the CLI
+make run ARGS="--help"           # run with arguments
+make clean                       # remove generated files
 uv sync                          # install/update dependencies
 uv add <package>                 # add new dependency
-uv run python -m task_tracker.cli  # run CLI directly
 
 # Testing
+make test                        # all tests
+make test-unit                   # unit tests only
+make test-acceptance             # acceptance tests only
 uv run pytest                    # all tests
 uv run pytest -k "test_add"      # tests matching pattern
 uv run pytest --lf               # last failed tests
 uv run pytest -x                 # stop on first failure
 
-# CLI Usage
-uv run task-tracker add "Task title" --tags tag1,tag2
-uv run task-tracker list
-uv run task-tracker list --tag testing
-uv run task-tracker complete 1
-uv run task-tracker delete 1
+# CLI Usage (current hello world)
+uv run task-tracker              # prints "Hello, Task Tracker!"
+uv run task-tracker --help       # show help
+uv run task-tracker --version    # show version
 ```
