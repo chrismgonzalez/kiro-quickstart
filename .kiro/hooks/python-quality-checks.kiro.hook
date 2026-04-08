@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Python Quality Checks",
+  "description": "Runs ruff, basedpyright, and bandit on Python files to ensure code quality and security",
+  "version": "1",
+  "when": {
+    "type": "userTriggered"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "make lint",
+    "timeout": 30
+  }
+}

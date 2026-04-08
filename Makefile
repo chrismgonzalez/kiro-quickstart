@@ -1,4 +1,4 @@
-.PHONY: help install test test-watch test-unit test-acceptance run clean
+.PHONY: help install test test-watch test-unit test-acceptance run lint clean
 
 help:
 	@echo "Task Tracker CLI - Development Commands"
@@ -11,6 +11,9 @@ help:
 	@echo "  make test-watch       Run tests in watch mode"
 	@echo "  make test-unit        Run unit tests only"
 	@echo "  make test-acceptance  Run acceptance tests only"
+	@echo ""
+	@echo "Code Quality:"
+	@echo "  make lint             Run ruff, basedpyright, and bandit"
 	@echo ""
 	@echo "Running:"
 	@echo "  make run              Run the CLI (use ARGS='...' for arguments)"
@@ -35,6 +38,9 @@ test-acceptance:
 
 run:
 	uv run task-tracker $(ARGS)
+
+lint:
+	uv run ruff check . && uv run basedpyright && uv run bandit -r src/
 
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
