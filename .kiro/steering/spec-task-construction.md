@@ -1,5 +1,6 @@
 ---
-inclusion: manual
+inclusion: fileMatch
+fileMatchPattern: ["**/tasks.md"]
 description: Guide for constructing spec tasks.md files following strict ATDD principles with RED-GREEN-REFACTOR workflow
 ---
 
