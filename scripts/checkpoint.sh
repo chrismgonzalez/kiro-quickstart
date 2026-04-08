@@ -9,11 +9,11 @@ DEMO_PREFIX="demo"
 # Checkpoint definitions
 declare -A CHECKPOINTS=(
     ["00-start-here"]="Starting point - minimal CLI with test infrastructure"
-    ["01-your-first-spec"]="Spec file created with initial requirements"
-    ["02-requirements"]="Requirements defined and reviewed"
-    ["03-design-and-tasks"]="Design complete with tasks defined"
+    ["01-requirements"]="Initial requirements"
+    ["02-design"]="First pass at the design"
+    ["03-tasks"]="Sequenced tasks"
     ["04-test-first-red"]="Acceptance test written (RED - failing)"
-    ["05-module-implemented"]="TaskStore module complete with unit tests"
+    ["05-module-implemented"]="Module complete with unit tests"
     ["06-feature-complete-green"]="CLI integrated - all tests pass (GREEN)"
     ["07-docs-updated"]="Documentation synced with code"
 )
@@ -21,9 +21,9 @@ declare -A CHECKPOINTS=(
 # Ordered list for display
 CHECKPOINT_ORDER=(
     "00-start-here"
-    "01-your-first-spec"
-    "02-requirements"
-    "03-design"
+    "01-requirements"
+    "02-design"
+    "03-tasks"
     "04-test-first-red"
     "05-module-implemented"
     "06-feature-complete-green"
