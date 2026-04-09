@@ -414,13 +414,6 @@ bash scripts/checkpoint.sh goto 04-test-first-red
 bash scripts/checkpoint.sh goto 06-feature-complete-green
 ```
 
-### Demo Documentation
-
-- **`DEMO_QUICKSTART.md`** - Quick reference for demo preparation
-- **`docs/DEMO_WORKFLOW.md`** - Step-by-step guide to creating checkpoints
-- **`docs/DEMO_GUIDE.md`** - Talking points and what to show at each checkpoint
-- **`scripts/checkpoint.sh`** - Checkpoint management tool
-
 ## About Kiro
 
 Kiro is an AI-powered IDE that supports spec-driven development with:
