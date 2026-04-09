@@ -337,42 +337,6 @@ make clean                       # remove generated files
 
 > Full task management commands (add, list, complete, delete) will be implemented via spec-driven development.
 
-## Preparing for Your Talk
-
-This repository includes tools for creating demo checkpoints that you can switch between during your presentation.
-
-### Quick Demo Setup
-
-```bash
-# 1. Work through the spec process with Kiro, saving checkpoints as you go
-bash scripts/checkpoint.sh save 00-start-here
-# ... work with Kiro to create spec ...
-bash scripts/checkpoint.sh save 01-your-first-spec
-# ... continue through all phases ...
-
-# 2. Verify all checkpoints are saved
-bash scripts/checkpoint.sh list
-
-# 3. Push to remote (optional, for backup)
-bash scripts/checkpoint.sh push
-```
-
-### During Your Talk
-
-```bash
-# Navigate between checkpoints
-bash scripts/checkpoint.sh goto 00-start-here
-bash scripts/checkpoint.sh goto 04-test-first-red
-bash scripts/checkpoint.sh goto 06-feature-complete-green
-```
-
-### Demo Documentation
-
-- **`DEMO_QUICKSTART.md`** - Quick reference for demo preparation
-- **`docs/DEMO_WORKFLOW.md`** - Step-by-step guide to creating checkpoints
-- **`docs/DEMO_GUIDE.md`** - Talking points and what to show at each checkpoint
-- **`scripts/checkpoint.sh`** - Checkpoint management tool
-
 ## About Kiro
 
 Kiro is an AI-powered IDE that supports spec-driven development with:
