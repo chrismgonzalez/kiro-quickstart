@@ -91,17 +91,18 @@ All tests must follow the four-layer architecture from the `atdd` skill:
 ```
 src/task_tracker/
   __init__.py      # Package initialization
-  cli.py           # Click CLI interface (hello world)
-
-  # To be implemented via spec:
-  store.py         # Task persistence (JSON file)
+  models.py        # Task data model and validation
+  storage.py       # Storage backend protocol
+  json_backend.py  # JSON file storage implementation
+  store.py         # Task business logic with ID generation
   filter.py        # Task filtering logic
   formatter.py     # Output formatting
+  cli.py           # Click CLI interface (create, list, get commands)
 
 tests/
   test_smoke.py    # Infrastructure smoke tests
-  acceptance/      # Layer 1: Test cases (ready for spec)
-  unit/            # Unit tests for modules (ready for spec)
+  acceptance/      # Layer 1 & 2: Test cases and DSL (30+ scenarios)
+  unit/            # Unit tests for all modules
 ```
 
 ## Naming Conventions
@@ -160,8 +161,14 @@ uv run pytest -k "test_add"      # tests matching pattern
 uv run pytest --lf               # last failed tests
 uv run pytest -x                 # stop on first failure
 
-# CLI Usage (current hello world)
-uv run task-tracker              # prints "Hello, Task Tracker!"
-uv run task-tracker --help       # show help
-uv run task-tracker --version    # show version
+# CLI Usage
+uv run task-tracker create "Write tests"              # create task
+uv run task-tracker create "Deploy" --tag urgent      # create with tag
+uv run task-tracker create "Done" --status complete   # create complete
+uv run task-tracker list                              # list all tasks
+uv run task-tracker list --status pending             # filter by status
+uv run task-tracker list --tag urgent                 # filter by tag
+uv run task-tracker get 1                             # get task by ID
+uv run task-tracker --help                            # show help
+uv run task-tracker --version                         # show version
 ```

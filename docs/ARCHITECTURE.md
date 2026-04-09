@@ -112,9 +112,13 @@ No mocking of code under your control. Real implementations run fast and catch i
 
 Each module has one clear purpose:
 
-- `store.py` - Task persistence
+- `models.py` - Task data model and validation
+- `storage.py` - Storage backend protocol (interface)
+- `json_backend.py` - JSON file storage implementation
+- `store.py` - Task business logic and ID generation
 - `filter.py` - Task filtering logic
 - `formatter.py` - Output formatting
+- `cli.py` - CLI command interface
 
 ### Minimal Interfaces
 
@@ -122,52 +126,75 @@ Modules expose only what the driver needs. No speculative features.
 
 ### No Premature Abstraction
 
-Start with the simplest implementation. Add abstraction only when justified by actual need.
+Started with the simplest implementation. Abstraction added only when justified by actual need (e.g., StorageBackend protocol for testability).
 
 ## Data Flow
 
 ```
 User Input (CLI)
     ↓
-CLI Command Handler
+CLI Command Handler (cli.py)
     ↓
-Application Modules (Store, Filter, Formatter)
+TaskStore (store.py) - Business logic
     ↓
-Storage (JSON file)
+StorageBackend (storage.py) - Protocol
+    ↓
+JSONFileBackend (json_backend.py) - Implementation
+    ↓
+JSON File (~/.task-tracker/tasks.json)
+
+Filtering & Formatting:
+TaskStore → TaskFilter → TaskFormatter → CLI Output
 ```
 
 ## Testing Strategy
 
-### Acceptance Tests
+### Acceptance Tests (30+ scenarios)
 
 - Test complete user workflows end-to-end
-- Use real implementations (no mocking)
+- Use real implementations (TaskStore, JSONFileBackend, TaskFilter, TaskFormatter)
+- No mocking (all code is under our control)
 - Written before implementation (RED)
-- Pass when story is complete (GREEN)
+- All passing (GREEN)
+- Cover all 6 requirements from spec
 
-### Unit Tests
+### Unit Tests (complete coverage)
 
 - Test individual module behavior
 - Fast and focused
 - Written before implementing each module (RED)
-- Pass when module is complete (GREEN)
+- All passing (GREEN)
+- Cover edge cases and validation logic
 
 ## Development Workflow
 
-1. **Write acceptance test** (Layer 1) - Fails (RED)
-2. **Identify modules needed** - Look at driver imports
-3. **Write unit tests** for each module - Fails (RED)
-4. **Implement minimal code** - Tests pass (GREEN)
-5. **Refactor** - Keep tests green
-6. **Update code-index.md** - Document new modules
+This project followed the ATDD workflow:
+
+1. **Wrote acceptance tests first (RED)** - 30+ scenarios in domain language
+2. **Identified modules needed** - From driver imports (models, storage, store, etc.)
+3. **Wrote unit tests for each module (RED)** - Comprehensive coverage
+4. **Implemented minimal code (GREEN)** - All tests passing
+5. **Refactored** - Kept tests green throughout
+6. **Updated code-index.md** - Documented all modules and functions
+
+## Implementation Complete
+
+The Task Tracker CLI demonstrates a complete ATDD cycle:
+
+- All acceptance tests passing (GREEN)
+- All unit tests passing (GREEN)
+- Full feature implementation
+- Clean four-layer architecture
+- Comprehensive documentation
 
 ## Future Considerations
 
 As the application grows, consider:
 
-- **Dependency injection** - When modules need configuration
-- **Interface segregation** - When modules have multiple clients
-- **Event-driven architecture** - When modules need to react to changes
-- **Caching layer** - When performance becomes critical
+- **Additional features** - Task completion, deletion, editing
+- **Advanced filtering** - Date ranges, complex queries
+- **Export formats** - CSV, Markdown, HTML
+- **Configuration** - Custom storage locations, output formats
+- **Performance optimization** - Caching, indexing for large task lists
 
 But don't add these until you need them. Start simple.

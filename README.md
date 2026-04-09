@@ -164,15 +164,42 @@ make run
 
 ## Task Tracker CLI
 
-A proof-of-concept CLI demonstrating ATDD with the four-layer architecture. Currently a minimal "Hello World" implementation - features will be added using spec-driven development.
+A proof-of-concept CLI demonstrating ATDD with the four-layer architecture. Features complete task management with creation, listing, filtering, and retrieval capabilities.
 
-### What This Will Demonstrate
+### Current Features
+
+- Create tasks with title, tags, and status
+- List all tasks with filtering by status or tag
+- Retrieve specific tasks by ID
+- Persistent JSON storage at `~/.task-tracker/tasks.json`
+- Auto-incrementing task IDs
+- ISO timestamp tracking
+- Input validation
+
+### CLI Commands
+
+```bash
+# Create tasks
+uv run task-tracker create "Write tests"
+uv run task-tracker create "Deploy app" --tag urgent --tag devops
+uv run task-tracker create "Review code" --status complete
+
+# List tasks
+uv run task-tracker list                    # all tasks
+uv run task-tracker list --status pending   # filter by status
+uv run task-tracker list --tag urgent       # filter by tag
+
+# Get specific task
+uv run task-tracker get 1                   # get task with ID 1
+```
+
+### What This Demonstrates
 
 1. **ATDD Four-Layer Architecture**
-   - Layer 1: Test cases in plain domain language
+   - Layer 1: 30+ test cases in plain domain language
    - Layer 2: DSL that composes driver operations
    - Layer 3: Protocol driver with elementary module calls
-   - Layer 4: Application modules (to be implemented via specs)
+   - Layer 4: Complete application modules (models, storage, store, filter, formatter, CLI)
 
 2. **Steering Documents**
    - Development guide with standards and quick commands
@@ -180,11 +207,11 @@ A proof-of-concept CLI demonstrating ATDD with the four-layer architecture. Curr
    - Testing guide for quick ATDD reference
 
 3. **Spec-Driven Development**
-   - Features defined in `.kiro/specs/`
+   - Feature defined in `.kiro/specs/task-creation-and-storage/`
    - Acceptance tests written before implementation (RED)
    - Module boundaries derived from driver imports
    - Unit tests for each module
-   - Red-green-refactor cycle
+   - Red-green-refactor cycle completed
 
 ## Project Structure
 
@@ -199,15 +226,31 @@ kiro-quickstart/
 │   │   ├── code-index.md
 │   │   └── testing-guide.md
 │   ├── specs/                # Spec-driven development
-│   │   └── task-tracker-cli-poc/
-│   └── hooks/                # Automation (to be added)
+│   │   └── task-creation-and-storage/
+│   └── hooks/                # Automation
 ├── src/
 │   └── task_tracker/
 │       ├── __init__.py      # Package initialization
-│       └── cli.py           # CLI interface (hello world)
+│       ├── models.py        # Task data model and validation
+│       ├── storage.py       # Storage backend protocol
+│       ├── json_backend.py  # JSON file storage
+│       ├── store.py         # Task business logic
+│       ├── filter.py        # Task filtering
+│       ├── formatter.py     # Output formatting
+│       └── cli.py           # CLI interface (create, list, get)
 ├── tests/
-│   ├── acceptance/          # Story-level tests (ready for spec)
-│   ├── unit/                # Component-level tests (ready for spec)
+│   ├── acceptance/          # Story-level tests (30+ scenarios)
+│   │   ├── test_task_creation.py  # Layer 1: Test cases
+│   │   ├── story_dsl.py           # Layer 2: DSL
+│   │   └── system_driver.py       # Layer 3: Driver
+│   ├── unit/                # Component-level tests
+│   │   ├── test_models.py
+│   │   ├── test_storage.py
+│   │   ├── test_json_backend.py
+│   │   ├── test_store.py
+│   │   ├── test_filter.py
+│   │   ├── test_formatter.py
+│   │   └── test_cli.py
 │   └── test_smoke.py        # Infrastructure smoke tests
 ├── Makefile                 # Development commands
 └── pyproject.toml           # Project configuration
@@ -312,7 +355,7 @@ For each feature:
 # Development
 make install                     # install/update dependencies
 make run                         # run the CLI
-make run ARGS="--help"           # run with arguments
+make run ARGS="create 'My task'" # run with arguments
 uv sync                          # install/update dependencies
 uv add <package>                 # add new dependency
 
@@ -320,22 +363,27 @@ uv add <package>                 # add new dependency
 make test                        # all tests
 make test-unit                   # unit tests only
 make test-acceptance             # acceptance tests only
+make lint                        # run ruff, basedpyright, bandit
 uv run pytest                    # all tests
 uv run pytest -v                 # verbose output
 uv run pytest -k "test_add"      # tests matching pattern
 uv run pytest --lf               # last failed tests
 uv run pytest -x                 # stop on first failure
 
-# CLI Usage (current hello world)
-uv run task-tracker              # prints "Hello, Task Tracker!"
-uv run task-tracker --help       # show help
-uv run task-tracker --version    # show version
+# CLI Usage
+uv run task-tracker create "Write tests"              # create task
+uv run task-tracker create "Deploy" --tag urgent      # create with tag
+uv run task-tracker create "Done" --status complete   # create complete
+uv run task-tracker list                              # list all tasks
+uv run task-tracker list --status pending             # filter by status
+uv run task-tracker list --tag urgent                 # filter by tag
+uv run task-tracker get 1                             # get task by ID
+uv run task-tracker --help                            # show help
+uv run task-tracker --version                         # show version
 
 # Maintenance
 make clean                       # remove generated files
 ```
-
-> Full task management commands (add, list, complete, delete) will be implemented via spec-driven development.
 
 ## Preparing for Your Talk
 

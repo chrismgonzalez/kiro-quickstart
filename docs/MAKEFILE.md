@@ -76,6 +76,22 @@ Equivalent to:
 uv run pytest --watch
 ```
 
+Note: This requires pytest-watch to be installed. Currently not in dependencies.
+
+### make lint
+
+Runs code quality checks with ruff, basedpyright, and bandit.
+
+```bash
+make lint
+```
+
+Equivalent to:
+
+```bash
+uv run ruff check . && uv run basedpyright && uv run bandit -r src/
+```
+
 ## Running Commands
 
 ### make run
